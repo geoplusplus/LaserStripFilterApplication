@@ -17,6 +17,8 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     QImage mat2qimage(cv::Mat& mat);
     ~MainWindow();
+    void processImage(cv::Mat img, QString output_file);
+    cv::Mat filtered;
 
 public Q_SLOTS:
     void updateView(int i);

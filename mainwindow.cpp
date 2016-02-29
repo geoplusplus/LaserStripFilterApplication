@@ -1,5 +1,9 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include <math.h>
+#include <list>
+#include <iostream>
+#include <fstream>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -13,7 +17,29 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(ui->greenSliderMax, SIGNAL(valueChanged(int)), this, SLOT(updateView(int)));
     QObject::connect(ui->redSliderMin, SIGNAL(valueChanged(int)), this, SLOT(updateView(int)));
     QObject::connect(ui->redSliderMax, SIGNAL(valueChanged(int)), this, SLOT(updateView(int)));
+    QObject::connect(ui->medianSlider, SIGNAL(valueChanged(int)), this, SLOT(updateView(int)));
+    QObject::connect(ui->erosionSlider, SIGNAL(valueChanged(int)), this, SLOT(updateView(int)));
     QObject::connect(ui->checkBox, SIGNAL(toggled(bool)), this, SLOT(toggleFilter(bool)));
+    QObject::connect(ui->diffCheckBox, SIGNAL(toggled(bool)), this, SLOT(toggleFilter(bool)));
+    QObject::connect(ui->diffReferenceCheckBox, SIGNAL(toggled(bool)), this, SLOT(toggleFilter(bool)));
+    QObject::connect(ui->medianCheckBox, SIGNAL(toggled(bool)), this, SLOT(toggleFilter(bool)));
+    QObject::connect(ui->erosionCheckBox, SIGNAL(toggled(bool)), this, SLOT(toggleFilter(bool)));
+    QObject::connect(ui->mainCheckBox, SIGNAL(toggled(bool)), this, SLOT(toggleFilter(bool)));
+
+    ui->greenSliderMax->setValue(130);
+    ui->blueSliderMax->setValue(130);
+    ui->redSliderMax->setValue(255);
+    ui->redSliderMin->setValue(30);
+
+    ui->medianSlider->setValue(5);
+    ui->erosionSlider->setValue(1);
+
+    ui->diffCheckBox->toggle();
+    ui->checkBox->toggle();
+    ui->diffReferenceCheckBox->toggle();
+    ui->erosionCheckBox->toggle();
+    ui->medianCheckBox->toggle();
+
 }
 
 QImage MainWindow::mat2qimage(cv::Mat& mat) {
@@ -57,6 +83,29 @@ QImage MainWindow::mat2qimage(cv::Mat& mat) {
 
 MainWindow::~MainWindow()
 {
+    QString path = QString("/home/minions/pikk.ply");
+
+
+    std::ofstream myfile;
+    myfile.open (path.toUtf8(), std::ofstream::out);
+    myfile << "ply" << std::endl;
+    myfile << "format ascii 1.0" << std::endl;
+    myfile << "comment Made with spinscan!" << std::endl;
+    myfile << "element vertex " << std::endl;
+    myfile << "property double x" << std::endl;
+    myfile << "property double y" << std::endl;
+    myfile << "property double z" << std::endl;
+    myfile << "property float nx" << std::endl;
+    myfile << "property float ny" << std::endl;
+    myfile << "property float nz" << std::endl;
+//    myfile << "property uchar red" << std::endl;
+//    myfile << "property uchar green" << std::endl;
+//    myfile << "property uchar blue" << std::endl;
+    myfile << "end_header" << std::endl;
+    myfile.close();
+    std::cout << "Wrote to ply file" << std::endl;
+
+    processImage(this->filtered, path);
     delete ui;
 }
 
@@ -69,21 +118,293 @@ void MainWindow::updateView(int i)
 {
     cv::Mat before = cv::imread("/home/minions/pictureBefore_1.png");
     cv::Mat after = cv::imread("/home/minions/pictureAfter_1.png");
-    cv::Mat diff;
-    cv::Mat redOnly;
-    QImage qImg;
 
-    cv::absdiff(before, after, diff);
+    cv::Mat referenceBefore = cv::imread("/home/minions/pictureReferenceBefore_1.png");
+    cv::Mat referenceAfter = cv::imread("/home/minions/pictureReferenceAfter_1.png");
 
-    if (ui->checkBox->isChecked()) {
-        cv::inRange(diff, cv::Scalar(ui->blueSliderMin->value(), ui->greenSliderMin->value(), ui->redSliderMin->value()),
-                         cv::Scalar(ui->blueSliderMax->value(), ui->greenSliderMax->value(), ui->redSliderMax->value()), redOnly);
-        qImg = mat2qimage(redOnly);
+    cv::Mat final = after;
+    cv::Mat temp;
 
-    } else {
-        qImg = mat2qimage(diff);
+    if (ui->diffCheckBox->isChecked() && ui->mainCheckBox->isChecked()) {
+        cv::absdiff(before, after, temp);
+        final = temp;
     }
 
+    if (ui->diffReferenceCheckBox->isChecked() && ui->mainCheckBox->isChecked()) {
+        cv::Mat referenceDiff;
+        cv::absdiff(referenceBefore, referenceAfter, referenceDiff);
+        cv::absdiff(final, referenceDiff, temp);
+        final = temp;
+    }
+
+    cv::Mat temp2;
+
+    cv::GaussianBlur(final, temp2, cv::Size(0, 0), 5);
+    cv::addWeighted(final, 3, temp2, -1, 0, temp);
+    final = temp;
+
+    if (ui->medianCheckBox->isChecked() && ui->mainCheckBox->isChecked()) {
+        // Post-processing to remove noise
+        int kernelSize = ui->medianSlider->value();
+
+        if (kernelSize % 2 != 1)
+            kernelSize = kernelSize - 1;
+
+        if (kernelSize < 1)
+            kernelSize = 1;
+
+        cv::medianBlur(final, temp, kernelSize);
+        final = temp;
+    }
+
+    if (ui->erosionCheckBox->isChecked() && ui->mainCheckBox->isChecked()) {
+        int erosion_size = ui->erosionSlider->value();
+        cv::Mat element = getStructuringElement(cv::MORPH_RECT,
+                                                cv::Size( 2*erosion_size + 1, 2*erosion_size+1 ),
+                                                cv::Point( erosion_size, erosion_size ) );
+        // Apply the erosion operation
+        erode(final, temp, element );
+        final = temp;
+    }
+
+    if (ui->checkBox->isChecked() && ui->mainCheckBox->isChecked()) {
+        cv::inRange(final, cv::Scalar(ui->blueSliderMin->value(), ui->greenSliderMin->value(), ui->redSliderMin->value()),
+                         cv::Scalar(ui->blueSliderMax->value(), ui->greenSliderMax->value(), ui->redSliderMax->value()), temp);
+        final = temp;
+    }
+
+    QImage qImg = mat2qimage(final);
     QPixmap pixMap = QPixmap::fromImage(qImg);
     ui->imageLabel->setPixmap(pixMap);
+//    QString path = QString("/home/minions/pikk.ply");
+//    processImage(final, path);
+    this->filtered = final;
 }
+/*
+void processImages()
+{
+    double angle_step = 1.0;
+
+    int steps = round(180/angle_step);
+
+    for (int i = 0; i < steps; i++) {
+
+        processImage();
+    }
+
+}
+*/
+
+void MainWindow::processImage(cv::Mat img, QString output_file)
+{
+    int cam_res_vert = img.rows;
+    int cam_res_hor = img.cols;
+    double cam_fov_hor = 84.1; // Degrees
+    double cam_fov_vert = 53.8;
+    double cam_tilt_angle = 0.0; // Degrees
+    double cam_distance = 200.0; // mm
+
+    double radiansToDegrees = 180.0 / 3.14159265359;
+    double degreesToRadians = 3.14159265359 / 180.0;
+
+    // FIXME! Set the correct angle here
+    double laser_angle = 30.0;
+
+    /* This assmumes you have brightness information
+     * currently we only have a binary image, and so this does not work.
+    for (int y = 0; y < cam_res_vert; y++) {
+      // find the brightest pixel
+      brightestValue = 0;
+      brightestX = -1;
+
+      for (int x = 0; x < cam_res_hor; x++) {
+        int pixelValue = laserImage.pixels[index];
+        float pixelBrightness = pixelValue >> 16 & 0xFF;
+
+        if (pixelBrightness > brightestValue && pixelBrightness > threshold) {
+          brightestValue = pixelBrightness;
+          brightestX = x;
+        }
+
+        index++;
+      }
+    */
+    for (int y = 0; y < cam_res_vert; y++) {
+
+        bool found_first_x = false;
+        int first_x = -1;
+        int last_x = -1;
+
+        for (int x = 0; x < cam_res_hor; x++) {
+            cv::Scalar intensity = img.at<uchar>(y, x);
+            if (intensity.val[0] > 200) {
+                if (!found_first_x) {
+                    found_first_x = true;
+                    std::cout << "Found a point" << std::endl;
+                    std::cout << "    X-location is " << x << std::endl;
+                    first_x = x;
+                } else {
+                    last_x = x;
+                }
+            }
+        }
+
+        if (found_first_x) {
+            double average_x = double (first_x + last_x)/2;
+
+            double radius;
+            double pos_in_pic = average_x/double(cam_res_hor);
+            //double pos_rel_to_center = pos_in_pic - 0.5;
+            double pixel_angle = pos_in_pic * cam_fov_hor; // degrees
+            double angle_rel_to_mid = pixel_angle - cam_fov_hor/2.0;
+            double big_angle = 180 - laser_angle + angle_rel_to_mid;
+            radius = cam_distance*sin(degreesToRadians*angle_rel_to_mid)/sin(big_angle*degreesToRadians);
+
+
+
+            double x_pos = radius * cos(laser_angle*degreesToRadians); // Flip sine and cos here?
+            double y_pos = radius * sin(laser_angle*degreesToRadians);
+
+            double cam_distance_to_pix_plane = cam_distance - radius*cos(laser_angle*degreesToRadians);
+//            double pix_dist_from_top = (double(y)/double(cam_res_vert));
+//            double (cam_fov_vert/2.0)*;
+
+            double z_pos = -atan((cam_fov_vert * degreesToRadians / 2.0)) * 2.0 * cam_distance * double(y) / double(cam_res_vert); // Copy-pasta
+
+
+            std::ofstream myfile;
+            myfile.open(output_file.toUtf8(), std::ofstream::out | std::ofstream::app);
+            myfile << x_pos << " ";
+            myfile << y_pos << " ";
+            myfile << z_pos << " ";
+            myfile << "0.0 0.0 0.0" << std::endl;
+            myfile.close();
+
+//            float pointZ = -atan((camVFOV * degreesToRadians / 2.0)) * 2.0 * camDistance * float(y) / float(videoHeight);
+
+            // println("line: " + y + " point: " + pointX + "," + pointY + "," + pointZ);
+            // println("brightestX: " + brightestX + " camAngle: " + camAngle + " radius: " + radius);
+
+//            thisPoint[0] = pointX;
+//            thisPoint[1] = pointY;
+//            thisPoint[2] = pointZ;
+            // println(thisPoint);
+//            pointList.add(thisPoint);
+//            framePointList.add(thisPoint);
+
+            // FIXME: these normals are bad
+            // assume normals are all pointing outwards from 0,0,z = pointX,pointY,0 (should be point to camera...)
+            // normalize it
+            // float normalLength = sqrt((pointX * pointX) + (pointY * pointY) + (0.0 * 0.0));
+            // thisNormal[0] = pointX/normalLength;
+            // thisNormal[1] = pointY/normalLength;
+//            thisNormal[0] = pointX;
+//            thisNormal[1] = pointY;
+//            thisNormal[2] = 0.0;
+//            normalList.add(thisNormal);
+        }
+     }
+
+}
+
+
+    /*
+
+
+  // code based on http://www.sjbaker.org/wiki/index.php?title=A_Simple_3D_Scanner
+
+  laserOffset = Float.parseFloat(laserOffsetField.getText());
+
+  // all the points in this frame ie. this spline
+  ArrayList framePointList = new ArrayList();
+
+//  println("Processing frame: " + frame + "/" + laserMovie.getFrameCount());
+  laserMovie.gotoFrameNumber(frame);
+  laserMovie.read();
+  laserImage = laserMovie.get();
+
+  textureMovie.gotoFrameNumber(frame);
+  textureMovie.read();
+  textureImage = textureMovie.get();
+
+  int brightestX = 0;
+  float brightestValue = 0;
+
+  laserImage.loadPixels();
+  textureImage.loadPixels();
+
+  int index = 0;
+
+  float frameAngle = float(frame) * (360.0 / float(laserMovie.getFrameCount()));
+
+  for (int y = 0; y < videoHeight; y++) {
+    // find the brightest pixel
+    brightestValue = 0;
+    brightestX = -1;
+
+    for (int x = 0; x < videoWidth; x++) {
+      int pixelValue = laserImage.pixels[index];
+      float pixelBrightness = pixelValue >> 16 & 0xFF;
+
+      if (pixelBrightness > brightestValue && pixelBrightness > threshold) {
+        brightestValue = pixelBrightness;
+        brightestX = x;
+      }
+
+      index++;
+    }
+
+    int[] thisColor = new int[3];
+    float[] thisPoint = new float[3];
+    float[] thisNormal = new float[3];
+
+    if (brightestX > 0) {
+      laserImage.pixels[y*videoWidth+brightestX] = color(0, 255, 0);
+      float r = red(textureImage.pixels[y*videoWidth+brightestX]);
+      float g = green(textureImage.pixels[y*videoWidth+brightestX]);
+      float b = blue(textureImage.pixels[y*videoWidth+brightestX]);
+      thisColor[0] = int(r);
+      thisColor[1] = int(g);
+      thisColor[2] = int(b);
+      colorList.add(thisColor);
+
+      float radius;
+      float camAngle = camHFOV * (0.5 - float(brightestX) / float(videoWidth));
+
+      float pointAngle = 180.0 - camAngle + laserOffset;
+      radius = camDistance * sin(camAngle * degreesToRadians) / sin(pointAngle * degreesToRadians);
+
+      float pointX = radius * sin(frameAngle * degreesToRadians);
+      float pointY = radius * cos(frameAngle * degreesToRadians);
+      float pointZ = -atan((camVFOV * degreesToRadians / 2.0)) * 2.0 * camDistance * float(y) / float(videoHeight);
+
+      // println("line: " + y + " point: " + pointX + "," + pointY + "," + pointZ);
+      // println("brightestX: " + brightestX + " camAngle: " + camAngle + " radius: " + radius);
+
+      thisPoint[0] = pointX;
+      thisPoint[1] = pointY;
+      thisPoint[2] = pointZ;
+      // println(thisPoint);
+      pointList.add(thisPoint);
+      framePointList.add(thisPoint);
+
+      // FIXME: these normals are bad
+      // assume normals are all pointing outwards from 0,0,z = pointX,pointY,0 (should be point to camera...)
+      // normalize it
+      // float normalLength = sqrt((pointX * pointX) + (pointY * pointY) + (0.0 * 0.0));
+      // thisNormal[0] = pointX/normalLength;
+      // thisNormal[1] = pointY/normalLength;
+      thisNormal[0] = pointX;
+      thisNormal[1] = pointY;
+      thisNormal[2] = 0.0;
+      normalList.add(thisNormal);
+
+      p.addPoint(thisPoint[0], -thisPoint[2], -thisPoint[1], r/255.0, g/255.0, b/255.0, 1);
+    }
+  }
+
+  splineList.add(framePointList);
+
+  laserImage.updatePixels();
+}
+*/

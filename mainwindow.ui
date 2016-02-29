@@ -18,7 +18,7 @@
     <property name="geometry">
      <rect>
       <x>1320</x>
-      <y>60</y>
+      <y>130</y>
       <width>160</width>
       <height>29</height>
      </rect>
@@ -34,7 +34,7 @@
     <property name="geometry">
      <rect>
       <x>1500</x>
-      <y>60</y>
+      <y>130</y>
       <width>160</width>
       <height>29</height>
      </rect>
@@ -50,7 +50,7 @@
     <property name="geometry">
      <rect>
       <x>1320</x>
-      <y>170</y>
+      <y>240</y>
       <width>160</width>
       <height>29</height>
      </rect>
@@ -66,7 +66,7 @@
     <property name="geometry">
      <rect>
       <x>1500</x>
-      <y>170</y>
+      <y>240</y>
       <width>160</width>
       <height>29</height>
      </rect>
@@ -82,7 +82,7 @@
     <property name="geometry">
      <rect>
       <x>1320</x>
-      <y>280</y>
+      <y>350</y>
       <width>160</width>
       <height>29</height>
      </rect>
@@ -101,7 +101,7 @@
     <property name="geometry">
      <rect>
       <x>1500</x>
-      <y>280</y>
+      <y>350</y>
       <width>160</width>
       <height>29</height>
      </rect>
@@ -117,7 +117,7 @@
     <property name="geometry">
      <rect>
       <x>1320</x>
-      <y>10</y>
+      <y>80</y>
       <width>67</width>
       <height>31</height>
      </rect>
@@ -135,7 +135,7 @@
     <property name="geometry">
      <rect>
       <x>1320</x>
-      <y>130</y>
+      <y>200</y>
       <width>91</width>
       <height>31</height>
      </rect>
@@ -153,7 +153,7 @@
     <property name="geometry">
      <rect>
       <x>1320</x>
-      <y>240</y>
+      <y>310</y>
       <width>67</width>
       <height>31</height>
      </rect>
@@ -171,7 +171,7 @@
     <property name="geometry">
      <rect>
       <x>1440</x>
-      <y>270</y>
+      <y>340</y>
       <width>31</width>
       <height>17</height>
      </rect>
@@ -184,7 +184,7 @@
     <property name="geometry">
      <rect>
       <x>1620</x>
-      <y>270</y>
+      <y>340</y>
       <width>31</width>
       <height>17</height>
      </rect>
@@ -197,7 +197,7 @@
     <property name="geometry">
      <rect>
       <x>1440</x>
-      <y>160</y>
+      <y>230</y>
       <width>31</width>
       <height>17</height>
      </rect>
@@ -210,7 +210,7 @@
     <property name="geometry">
      <rect>
       <x>1620</x>
-      <y>160</y>
+      <y>230</y>
       <width>31</width>
       <height>17</height>
      </rect>
@@ -223,7 +223,7 @@
     <property name="geometry">
      <rect>
       <x>1440</x>
-      <y>50</y>
+      <y>120</y>
       <width>31</width>
       <height>17</height>
      </rect>
@@ -236,7 +236,7 @@
     <property name="geometry">
      <rect>
       <x>1620</x>
-      <y>50</y>
+      <y>120</y>
       <width>31</width>
       <height>17</height>
      </rect>
@@ -249,7 +249,7 @@
     <property name="geometry">
      <rect>
       <x>1370</x>
-      <y>310</y>
+      <y>380</y>
       <width>64</width>
       <height>23</height>
      </rect>
@@ -259,7 +259,7 @@
     <property name="geometry">
      <rect>
       <x>1550</x>
-      <y>310</y>
+      <y>380</y>
       <width>64</width>
       <height>23</height>
      </rect>
@@ -269,7 +269,7 @@
     <property name="geometry">
      <rect>
       <x>1550</x>
-      <y>200</y>
+      <y>270</y>
       <width>64</width>
       <height>23</height>
      </rect>
@@ -279,7 +279,7 @@
     <property name="geometry">
      <rect>
       <x>1370</x>
-      <y>200</y>
+      <y>270</y>
       <width>64</width>
       <height>23</height>
      </rect>
@@ -289,7 +289,7 @@
     <property name="geometry">
      <rect>
       <x>1550</x>
-      <y>90</y>
+      <y>160</y>
       <width>64</width>
       <height>23</height>
      </rect>
@@ -299,7 +299,7 @@
     <property name="geometry">
      <rect>
       <x>1370</x>
-      <y>90</y>
+      <y>160</y>
       <width>64</width>
       <height>23</height>
      </rect>
@@ -325,13 +325,230 @@
     <property name="geometry">
      <rect>
       <x>1320</x>
-      <y>360</y>
+      <y>430</y>
       <width>131</width>
       <height>22</height>
      </rect>
     </property>
     <property name="text">
      <string>Filter on color</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="diffCheckBox">
+    <property name="geometry">
+     <rect>
+      <x>1320</x>
+      <y>460</y>
+      <width>231</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Compute absolute difference</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="diffReferenceCheckBox">
+    <property name="geometry">
+     <rect>
+      <x>1320</x>
+      <y>490</y>
+      <width>321</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Compute absolute difference to reference</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="medianCheckBox">
+    <property name="geometry">
+     <rect>
+      <x>1320</x>
+      <y>750</y>
+      <width>321</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Apply median filtering</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_10">
+    <property name="geometry">
+     <rect>
+      <x>1340</x>
+      <y>780</y>
+      <width>31</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Min</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_11">
+    <property name="geometry">
+     <rect>
+      <x>1320</x>
+      <y>710</y>
+      <width>211</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>20</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>Median Filtering</string>
+    </property>
+   </widget>
+   <widget class="QSlider" name="medianSlider">
+    <property name="geometry">
+     <rect>
+      <x>1319</x>
+      <y>790</y>
+      <width>341</width>
+      <height>29</height>
+     </rect>
+    </property>
+    <property name="maximum">
+     <number>25</number>
+    </property>
+    <property name="singleStep">
+     <number>1</number>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
+    </property>
+    <property name="invertedControls">
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QLCDNumber" name="medianBox">
+    <property name="geometry">
+     <rect>
+      <x>1460</x>
+      <y>820</y>
+      <width>64</width>
+      <height>23</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_12">
+    <property name="geometry">
+     <rect>
+      <x>1620</x>
+      <y>780</y>
+      <width>31</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Max</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="erosionCheckBox">
+    <property name="geometry">
+     <rect>
+      <x>1320</x>
+      <y>590</y>
+      <width>321</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Apply erosion filtering</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_13">
+    <property name="geometry">
+     <rect>
+      <x>1320</x>
+      <y>550</y>
+      <width>211</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>20</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>Erosion Filtering</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_14">
+    <property name="geometry">
+     <rect>
+      <x>1620</x>
+      <y>620</y>
+      <width>31</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Max</string>
+    </property>
+   </widget>
+   <widget class="QSlider" name="erosionSlider">
+    <property name="geometry">
+     <rect>
+      <x>1319</x>
+      <y>630</y>
+      <width>341</width>
+      <height>29</height>
+     </rect>
+    </property>
+    <property name="maximum">
+     <number>25</number>
+    </property>
+    <property name="singleStep">
+     <number>1</number>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
+    </property>
+    <property name="invertedControls">
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QLCDNumber" name="erosionBox">
+    <property name="geometry">
+     <rect>
+      <x>1460</x>
+      <y>660</y>
+      <width>64</width>
+      <height>23</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_15">
+    <property name="geometry">
+     <rect>
+      <x>1340</x>
+      <y>620</y>
+      <width>31</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Min</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="mainCheckBox">
+    <property name="geometry">
+     <rect>
+      <x>1320</x>
+      <y>30</y>
+      <width>321</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Main filter switch</string>
     </property>
    </widget>
   </widget>
@@ -365,12 +582,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>797</x>
-     <y>206</y>
+     <x>1417</x>
+     <y>116</y>
     </hint>
     <hint type="destinationlabel">
-     <x>790</x>
-     <y>232</y>
+     <x>1410</x>
+     <y>142</y>
     </hint>
    </hints>
   </connection>
@@ -381,12 +598,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>960</x>
-     <y>203</y>
+     <x>1580</x>
+     <y>113</y>
     </hint>
     <hint type="destinationlabel">
-     <x>964</x>
-     <y>221</y>
+     <x>1584</x>
+     <y>131</y>
     </hint>
    </hints>
   </connection>
@@ -397,12 +614,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>800</x>
-     <y>315</y>
+     <x>1420</x>
+     <y>225</y>
     </hint>
     <hint type="destinationlabel">
-     <x>793</x>
-     <y>342</y>
+     <x>1413</x>
+     <y>252</y>
     </hint>
    </hints>
   </connection>
@@ -413,12 +630,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>957</x>
-     <y>317</y>
+     <x>1577</x>
+     <y>227</y>
     </hint>
     <hint type="destinationlabel">
-     <x>957</x>
-     <y>340</y>
+     <x>1577</x>
+     <y>250</y>
     </hint>
    </hints>
   </connection>
@@ -429,12 +646,12 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>787</x>
-     <y>426</y>
+     <x>1407</x>
+     <y>336</y>
     </hint>
     <hint type="destinationlabel">
-     <x>788</x>
-     <y>447</y>
+     <x>1408</x>
+     <y>357</y>
     </hint>
    </hints>
   </connection>
@@ -445,12 +662,44 @@
    <slot>display(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>975</x>
-     <y>425</y>
+     <x>1595</x>
+     <y>335</y>
     </hint>
     <hint type="destinationlabel">
-     <x>975</x>
-     <y>448</y>
+     <x>1595</x>
+     <y>358</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>medianSlider</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>medianBox</receiver>
+   <slot>display(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1490</x>
+     <y>774</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1493</x>
+     <y>793</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>erosionSlider</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>erosionBox</receiver>
+   <slot>display(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1496</x>
+     <y>612</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1498</x>
+     <y>636</y>
     </hint>
    </hints>
   </connection>
