@@ -139,9 +139,11 @@ void MainWindow::updateView(int i)
 
     cv::Mat temp2;
 
-    cv::GaussianBlur(final, temp2, cv::Size(0, 0), 5);
-    cv::addWeighted(final, 3, temp2, -1, 0, temp);
-    final = temp;
+    if (ui->sharpeningCheckBox->isChecked() && ui->mainCheckBox->isChecked()) {
+        cv::GaussianBlur(final, temp2, cv::Size(0, 0), 5);
+        cv::addWeighted(final, 3, temp2, -1, 0, temp);
+        final = temp;
+    }
 
     if (ui->medianCheckBox->isChecked() && ui->mainCheckBox->isChecked()) {
         // Post-processing to remove noise
@@ -176,8 +178,6 @@ void MainWindow::updateView(int i)
     QImage qImg = mat2qimage(final);
     QPixmap pixMap = QPixmap::fromImage(qImg);
     ui->imageLabel->setPixmap(pixMap);
-//    QString path = QString("/home/minions/pikk.ply");
-//    processImage(final, path);
     this->filtered = final;
 }
 /*
@@ -199,16 +199,26 @@ void MainWindow::processImage(cv::Mat img, QString output_file)
 {
     int cam_res_vert = img.rows;
     int cam_res_hor = img.cols;
-    double cam_fov_hor = 84.1; // Degrees
-    double cam_fov_vert = 53.8;
-    double cam_tilt_angle = 0.0; // Degrees
-    double cam_distance = 200.0; // mm
 
     double radiansToDegrees = 180.0 / 3.14159265359;
     double degreesToRadians = 3.14159265359 / 180.0;
 
     // FIXME! Set the correct angle here
     double laser_angle = 30.0;
+
+    // These values are not perfect, but the variance between cameras is good enough for now
+    // Assumes hd resolution is used
+    double cam_focal_distance_pixels = 1081.37;
+//    double cam_focal_distance_mm = 3.291;
+//    double cam_cx = 959.5;
+//    double cam_cy = 539.5;
+
+//    double cam_fov_hor = 84.1; // Degrees
+//    double cam_fov_vert = 53.8;
+//    double cam_tilt_angle = 0.0; // Degrees
+    double cam_center_dist = 200.0; // mm
+    double laser_cam_dist = cam_center_dist*tan(laser_angle*degreesToRadians);
+    double laser_center_dist = cam_center_dist / cos(laser_angle*degreesToRadians);
 
     /* This assmumes you have brightness information
      * currently we only have a binary image, and so this does not work.
@@ -246,31 +256,32 @@ void MainWindow::processImage(cv::Mat img, QString output_file)
                 } else {
                     last_x = x;
                 }
+            } else if (found_first_x) {
+                // End of continuous segment of the line. Just break out of the loop and calculate the point.
+                break;
             }
         }
 
         if (found_first_x) {
+
+
             double average_x = double (first_x + last_x)/2;
 
-            double radius;
-            double pos_in_pic = average_x/double(cam_res_hor);
-            //double pos_rel_to_center = pos_in_pic - 0.5;
-            double pixel_angle = pos_in_pic * cam_fov_hor; // degrees
-            double angle_rel_to_mid = pixel_angle - cam_fov_hor/2.0;
-            double big_angle = 180 - laser_angle + angle_rel_to_mid;
-            radius = cam_distance*sin(degreesToRadians*angle_rel_to_mid)/sin(big_angle*degreesToRadians);
+            double pixel_angle_x = atan2(average_x - (cam_res_hor/2), cam_focal_distance_pixels)*radiansToDegrees;
 
+            double laser_hor_angle = (180 - 90 - laser_angle);
+            double laser_cam_angle = 180 - (90 - pixel_angle_x) - laser_hor_angle;
 
+            double laser_cam_plane_dist = laser_cam_dist/sin(laser_cam_angle*degreesToRadians)*sin((90 - pixel_angle_x)*degreesToRadians);
 
-            double x_pos = radius * cos(laser_angle*degreesToRadians); // Flip sine and cos here?
-            double y_pos = radius * sin(laser_angle*degreesToRadians);
+            double radius = laser_center_dist - laser_cam_plane_dist;
 
-            double cam_distance_to_pix_plane = cam_distance - radius*cos(laser_angle*degreesToRadians);
-//            double pix_dist_from_top = (double(y)/double(cam_res_vert));
-//            double (cam_fov_vert/2.0)*;
+            double x_pos = sin(laser_angle*degreesToRadians)*radius;
+            double y_pos = cos(laser_angle*degreesToRadians)*radius;
 
-            double z_pos = -atan((cam_fov_vert * degreesToRadians / 2.0)) * 2.0 * cam_distance * double(y) / double(cam_res_vert); // Copy-pasta
+            double cam_cam_plane_dist = cam_center_dist - y_pos;
 
+            double z_pos = y / cam_focal_distance_pixels * cam_cam_plane_dist;
 
             std::ofstream myfile;
             myfile.open(output_file.toUtf8(), std::ofstream::out | std::ofstream::app);

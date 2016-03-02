@@ -364,7 +364,7 @@
     <property name="geometry">
      <rect>
       <x>1320</x>
-      <y>750</y>
+      <y>770</y>
       <width>321</width>
       <height>22</height>
      </rect>
@@ -377,7 +377,7 @@
     <property name="geometry">
      <rect>
       <x>1340</x>
-      <y>780</y>
+      <y>800</y>
       <width>31</width>
       <height>17</height>
      </rect>
@@ -390,7 +390,7 @@
     <property name="geometry">
      <rect>
       <x>1320</x>
-      <y>710</y>
+      <y>730</y>
       <width>211</width>
       <height>31</height>
      </rect>
@@ -408,7 +408,7 @@
     <property name="geometry">
      <rect>
       <x>1319</x>
-      <y>790</y>
+      <y>810</y>
       <width>341</width>
       <height>29</height>
      </rect>
@@ -430,7 +430,7 @@
     <property name="geometry">
      <rect>
       <x>1460</x>
-      <y>820</y>
+      <y>840</y>
       <width>64</width>
       <height>23</height>
      </rect>
@@ -440,7 +440,7 @@
     <property name="geometry">
      <rect>
       <x>1620</x>
-      <y>780</y>
+      <y>800</y>
       <width>31</width>
       <height>17</height>
      </rect>
@@ -453,7 +453,7 @@
     <property name="geometry">
      <rect>
       <x>1320</x>
-      <y>590</y>
+      <y>610</y>
       <width>321</width>
       <height>22</height>
      </rect>
@@ -466,7 +466,7 @@
     <property name="geometry">
      <rect>
       <x>1320</x>
-      <y>550</y>
+      <y>570</y>
       <width>211</width>
       <height>31</height>
      </rect>
@@ -484,7 +484,7 @@
     <property name="geometry">
      <rect>
       <x>1620</x>
-      <y>620</y>
+      <y>640</y>
       <width>31</width>
       <height>17</height>
      </rect>
@@ -497,7 +497,7 @@
     <property name="geometry">
      <rect>
       <x>1319</x>
-      <y>630</y>
+      <y>650</y>
       <width>341</width>
       <height>29</height>
      </rect>
@@ -519,7 +519,7 @@
     <property name="geometry">
      <rect>
       <x>1460</x>
-      <y>660</y>
+      <y>680</y>
       <width>64</width>
       <height>23</height>
      </rect>
@@ -529,7 +529,7 @@
     <property name="geometry">
      <rect>
       <x>1340</x>
-      <y>620</y>
+      <y>640</y>
       <width>31</width>
       <height>17</height>
      </rect>
@@ -549,6 +549,19 @@
     </property>
     <property name="text">
      <string>Main filter switch</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="sharpeningCheckBox">
+    <property name="geometry">
+     <rect>
+      <x>1320</x>
+      <y>520</y>
+      <width>321</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Apply gaussian blur sharpening</string>
     </property>
    </widget>
   </widget>
